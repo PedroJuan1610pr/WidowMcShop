@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Widow MC — Web Shop</title>
+<link rel="icon" type="image/png" href="img/logo.png">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+  :root{
+    --bg: #0c0a0a;
+    --bg-deep: #060505;
+    --panel: #150f0f;
+    --panel-2: #1c1414;
+    --line: #3a1414;
+    --line-bright: #6b1d1d;
+    --text: #e9dede;
+    --text-dim: #8a7575;
+    --accent: #c81e1e;       /* rojo viuda negra */
+    --accent-bright: #ff2e2e;
+    --accent-dim: #7a1414;
+    --gold: #d9b25c;
+    --teal: #c2484a;
+    --danger: #ff4747;
+    --radius: 2px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(ellipse 900px 500px at 15% -10%, rgba(200,30,30,0.10), transparent 60%),
+      radial-gradient(ellipse 700px 500px at 105% 10%, rgba(200,30,30,0.07), transparent 60%),
+      var(--bg-deep);
+    color:var(--text);
+    font-family: 'JetBrains Mono', ui-monospace, Consolas, monospace;
+    font-size:14px;
+    position:relative;
+  }
+
+  /* tela de araña sutil de fondo, fija en la esquina superior */
+  body::before{
+    content:"";
+    position:fixed;
+    top:-60px; left:-60px;
+    width:340px; height:340px;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><g fill="none" stroke="%23c81e1e" stroke-width="0.6" opacity="0.35"><circle cx="0" cy="0" r="40"/><circle cx="0" cy="0" r="80"/><circle cx="0" cy="0" r="120"/><circle cx="0" cy="0" r="160"/><line x1="0" y1="0" x2="200" y2="0"/><line x1="0" y1="0" x2="200" y2="60"/><line x1="0" y1="0" x2="200" y2="120"/><line x1="0" y1="0" x2="200" y2="200"/><line x1="0" y1="0" x2="140" y2="200"/><line x1="0" y1="0" x2="70" y2="200"/><line x1="0" y1="0" x2="0" y2="200"/></g></svg>');
+    background-repeat:no-repeat;
+    pointer-events:none;
+    z-index:0;
+    opacity:0.6;
+  }
+
+  header{
+    position:relative;
+    z-index:1;
+    padding:24px 28px 18px;
+    border-bottom:2px solid var(--line-bright);
+    display:flex;
+    align-items:center;
+    gap:16px;
+    flex-wrap:wrap;
+    background: linear-gradient(180deg, rgba(120,20,20,0.10), transparent);
+  }
+  .spider-mark{
+    width:34px; height:34px;
+    flex-shrink:0;
+    filter: drop-shadow(0 0 6px rgba(255,40,40,0.5));
+  }
+  header h1{
+    margin:0;
+    font-family:'Courier New', Courier, monospace;
+    font-weight:900;
+    font-size:21px;
+    letter-spacing:1.5px;
+    color:var(--accent-bright);
+    text-transform:uppercase;
+    text-shadow: 0 0 14px rgba(255,40,40,0.35);
+  }
+  header .sub{
+    color:var(--text-dim);
+    font-size:11.5px;
+    letter-spacing:0.5px;
+  }
+
+  .layout{
+    display:grid;
+    grid-template-columns: 280px 1fr;
+    min-height: calc(100vh - 70px);
+  }
+  @media (max-width: 800px){
+    .layout{ grid-template-columns: 1fr; }
+  }
+
+  .controls{
+    background:var(--panel);
+    border-right:2px solid var(--line);
+    padding:18px;
+    display:flex;
+    flex-direction:column;
+    gap:18px;
+  }
+  .group{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+  }
+  .group label.title{
+    color:var(--text-dim);
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:1px;
+    margin-bottom:2px;
+  }
+  .seg{
+    display:flex;
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    overflow:hidden;
+  }
+  .seg button{
+    flex:1;
+    background:var(--panel-2);
+    color:var(--text-dim);
+    border:none;
+    padding:8px 6px;
+    cursor:pointer;
+    font-family:inherit;
+    font-size:12px;
+  }
+  .seg button.active{
+    background:var(--accent-dim);
+    color:#fff;
+  }
+  .seg button:not(:last-child){ border-right:1px solid var(--line); }
+
+  input[type="text"], input[type="number"], select{
+    background:var(--panel-2);
+    border:1px solid var(--line);
+    color:var(--text);
+    padding:7px 8px;
+    border-radius:var(--radius);
+    font-family:inherit;
+    font-size:13px;
+    width:100%;
+  }
+  input:focus, select:focus{
+    outline:1px solid var(--accent);
+    outline-offset:0;
+  }
+  .row2{ display:flex; gap:8px; }
+  .row2 > div{ flex:1; }
+
+  .checkrow{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    color:var(--text-dim);
+    font-size:13px;
+  }
+  .checkrow input{ accent-color: var(--accent); }
+
+  button.primary{
+    background:var(--accent-dim);
+    color:#fff;
+    border:1px solid var(--accent);
+    padding:9px;
+    border-radius:var(--radius);
+    cursor:pointer;
+    font-family:inherit;
+    font-size:13px;
+    letter-spacing:0.5px;
+  }
+  button.primary:hover{ background:var(--accent); }
+
+  .status{
+    margin-top:auto;
+    font-size:11px;
+    color:var(--text-dim);
+    border-top:1px solid var(--line);
+    padding-top:10px;
+  }
+  .status.err{ color: var(--danger); }
+  .status.ok{ color: var(--accent); }
+
+  .content{
+    padding:18px 22px;
+    overflow:auto;
+  }
+
+  table{
+    width:100%;
+    border-collapse:collapse;
+  }
+  thead th{
+    text-align:left;
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:1px;
+    color:var(--text-dim);
+    padding:8px 10px;
+    border-bottom:2px solid var(--line);
+    position:sticky;
+    top:0;
+    background:var(--bg);
+  }
+  thead th.num{ text-align:right; }
+  tbody td{
+    padding:7px 10px;
+    border-bottom:1px solid var(--line);
+    white-space:nowrap;
+  }
+  tbody tr:hover{ background:var(--panel); }
+  td.num{ text-align:right; font-variant-numeric: tabular-nums; }
+  td.buy{ color:var(--gold); }
+  td.sell{ color:var(--teal); }
+  td.market{
+    font-size:11px;
+    color:var(--text-dim);
+    text-transform:uppercase;
+  }
+  td.yes{ color:var(--accent); }
+  td.no{ color:var(--text-dim); }
+
+  .empty{
+    color:var(--text-dim);
+    padding:40px;
+    text-align:center;
+  }
+
+  ::-webkit-scrollbar{ width:10px; height:10px; }
+  ::-webkit-scrollbar-track{ background:var(--bg); }
+  ::-webkit-scrollbar-thumb{ background:var(--line); border-radius:5px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Widow MC · Shop Filter</h1>
+  <span class="sub" id="apiNote">api.widowmc.net/api/v1/shop</span>
+</header>
+
+<div class="layout">
+
+  <aside class="controls">
+
+    <div class="group">
+      <label class="title">Ordenar / filtrar por</label>
+      <div class="seg" id="tipoSeg">
+        <button data-val="buy" class="active">Buy</button>
+        <button data-val="sell">Sell</button>
+      </div>
+    </div>
+
+    <div class="group">
+      <label class="title">Orden</label>
+      <div class="seg" id="ordenSeg">
+        <button data-val="desc" class="active">Más caro</button>
+        <button data-val="asc">Más barato</button>
+      </div>
+    </div>
+
+    <div class="group">
+      <label class="title">Buscar material</label>
+      <input type="text" id="buscar" placeholder="ej. shulker, diamond...">
+    </div>
+
+    <div class="group">
+      <label class="title">Rango de precio</label>
+      <div class="row2">
+        <div><input type="number" id="minVal" placeholder="Mín"></div>
+        <div><input type="number" id="maxVal" placeholder="Máx"></div>
+      </div>
+    </div>
+
+    <div class="group">
+      <label class="title">Mercado</label>
+      <select id="marketSel">
+        <option value="Todos">Todos</option>
+      </select>
+    </div>
+
+    <div class="group">
+      <div class="checkrow">
+        <input type="checkbox" id="soloVendibles">
+        <label for="soloVendibles">Solo vendibles (sellable)</label>
+      </div>
+    </div>
+
+    <div class="group">
+      <label class="title">Mostrar top</label>
+      <input type="number" id="topN" value="50" min="1">
+    </div>
+
+    <button class="primary" id="refreshBtn">↻ Refrescar datos</button>
+
+    <div class="status" id="status">Cargando datos...</div>
+  </aside>
+
+  <main class="content">
+    <table id="resultTable">
+      <thead>
+        <tr>
+          <th>Material</th>
+          <th class="num">Buy</th>
+          <th class="num">Sell</th>
+          <th>Market</th>
+          <th>Vendible</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+    <div class="empty" id="emptyMsg" style="display:none;">Sin resultados para estos filtros.</div>
+  </main>
+
+</div>
+
+<script>
+const API_URL = "https://api.widowmc.net/api/v1/shop";
+
+let itemsRaw = [];
+let tipo = "buy";
+let orden = "desc";
+
+const el = id => document.getElementById(id);
+const statusEl = el("status");
+const tbody = el("tbody");
+const emptyMsg = el("emptyMsg");
+const table = el("resultTable");
+
+function setStatus(msg, cls){
+  statusEl.textContent = msg;
+  statusEl.className = "status" + (cls ? " " + cls : "");
+}
+
+async function cargarDatos(){
+  setStatus("Cargando datos de la API...");
+  try{
+    const res = await fetch(API_URL, { cache: "no-store" });
+    if(!res.ok) throw new Error("HTTP " + res.status);
+    const data = await res.json();
+    itemsRaw = data.items || [];
+
+    // poblar selector de mercados
+    const mercados = [...new Set(itemsRaw.map(i => i.market).filter(Boolean))].sort();
+    const sel = el("marketSel");
+    sel.innerHTML = '<option value="Todos">Todos</option>' +
+      mercados.map(m => `<option value="${m}">${m}</option>`).join("");
+
+    setStatus(`${itemsRaw.length} items cargados correctamente.`, "ok");
+    aplicarFiltros();
+  }catch(e){
+    setStatus(
+      "No se pudo conectar a la API. Si el problema persiste puede deberse a CORS " +
+      "(el navegador bloquea peticiones a otro dominio) — revisa la consola. Detalle: " + e.message,
+      "err"
+    );
+  }
+}
+
+function aplicarFiltros(){
+  if(!itemsRaw.length) return;
+
+  const buscar = el("buscar").value.trim().toLowerCase();
+  const minVal = el("minVal").value !== "" ? parseFloat(el("minVal").value) : null;
+  const maxVal = el("maxVal").value !== "" ? parseFloat(el("maxVal").value) : null;
+  const market = el("marketSel").value;
+  const soloVendibles = el("soloVendibles").checked;
+  let topN = parseInt(el("topN").value, 10);
+  if(isNaN(topN) || topN <= 0) topN = 50;
+
+  let filtrados = itemsRaw.filter(item => {
+    const valor = item[tipo];
+    if(valor === null || valor === undefined) return false;
+    if(soloVendibles && !item.sellable) return false;
+    if(minVal !== null && valor < minVal) return false;
+    if(maxVal !== null && valor > maxVal) return false;
+    if(buscar && !item.material.toLowerCase().includes(buscar)) return false;
+    if(market !== "Todos" && item.market !== market) return false;
+    return true;
+  });
+
+  filtrados.sort((a, b) => orden === "desc" ? b[tipo] - a[tipo] : a[tipo] - b[tipo]);
+  filtrados = filtrados.slice(0, topN);
+
+  renderTabla(filtrados);
+  setStatus(`Mostrando ${filtrados.length} de ${itemsRaw.length} items.`, "ok");
+}
+
+function renderTabla(items){
+  if(!items.length){
+    table.style.display = "none";
+    emptyMsg.style.display = "block";
+    return;
+  }
+  table.style.display = "table";
+  emptyMsg.style.display = "none";
+
+  tbody.innerHTML = items.map(item => {
+    const buy = item.buy !== null && item.buy !== undefined ? item.buy.toFixed(2) : "-";
+    const sell = item.sell !== null && item.sell !== undefined ? item.sell.toFixed(2) : "-";
+    const vendibleClass = item.sellable ? "yes" : "no";
+    const vendibleTxt = item.sellable ? "Sí" : "No";
+    return `<tr>
+      <td>${item.material}</td>
+      <td class="num buy">${buy}</td>
+      <td class="num sell">${sell}</td>
+      <td class="market">${item.market || ""}</td>
+      <td class="${vendibleClass}">${vendibleTxt}</td>
+    </tr>`;
+  }).join("");
+}
+
+// --- listeners ---
+document.querySelectorAll("#tipoSeg button").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll("#tipoSeg button").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    tipo = btn.dataset.val;
+    aplicarFiltros();
+  });
+});
+
+document.querySelectorAll("#ordenSeg button").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll("#ordenSeg button").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    orden = btn.dataset.val;
+    aplicarFiltros();
+  });
+});
+
+["buscar","minVal","maxVal","topN"].forEach(id => {
+  el(id).addEventListener("input", aplicarFiltros);
+});
+el("marketSel").addEventListener("change", aplicarFiltros);
+el("soloVendibles").addEventListener("change", aplicarFiltros);
+el("refreshBtn").addEventListener("click", cargarDatos);
+
+cargarDatos();
+</script>
+</body>
+</html>
