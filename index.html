@@ -231,13 +231,34 @@
   ::-webkit-scrollbar{ width:10px; height:10px; }
   ::-webkit-scrollbar-track{ background:var(--bg); }
   ::-webkit-scrollbar-thumb{ background:var(--line); border-radius:5px; }
+
+  td.base-up {
+    color: #49d85a;
+    font-weight: bold;
+  }
+
+  td.base-down {
+    color: #ff4747;
+    font-weight: bold;
+  }
+
+  td.base-same {
+    color: var(--text);
+  }
+
+  .base-arrow {
+    margin-left: 6px;
+    font-size: 12px;
+    opacity: 0.9;
+  }
+
 </style>
 </head>
 <body>
 
 <header>
-  <h1>Widow MC · Shop Filter</h1>
-  <span class="sub" id="apiNote">api.widowmc.net/api/v1/shop </span>
+  <h1>Widow MC · Web Shop</h1>
+  <span class="sub" id="apiNote">api.widowmc.net/api/v1/shop</span>
 </header>
 
 <div class="layout">
@@ -302,6 +323,7 @@
       <thead>
         <tr>
           <th>Material</th>
+          <th class="num">Base</th>
           <th class="num">Buy</th>
           <th class="num">Sell</th>
           <th>Market</th>
@@ -399,10 +421,32 @@ function renderTabla(items){
   tbody.innerHTML = items.map(item => {
     const buy = item.buy !== null && item.buy !== undefined ? item.buy.toFixed(2) : "-";
     const sell = item.sell !== null && item.sell !== undefined ? item.sell.toFixed(2) : "-";
+    const base = item.base !== null && item.base !== undefined ? item.base.toFixed(2) : "-";
+    const precio = item[tipo];
+    let baseClass = "base-same";
+    let arrow = "";
+
+    if (
+      precio !== null &&
+      precio !== undefined &&
+      item.base !== null &&
+      item.base !== undefined
+    ) {
+      if (precio > item.base) {
+        baseClass = "base-up";
+        arrow = "↑";
+      } else if (precio < item.base) {
+        baseClass = "base-down";
+        arrow = "↓";
+      }
+    }
     const vendibleClass = item.sellable ? "yes" : "no";
     const vendibleTxt = item.sellable ? "Sí" : "No";
     return `<tr>
       <td>${item.material}</td>
+      <td class="num ${baseClass}">
+        ${base} <span class="base-arrow">${arrow}</span>
+      </td>
       <td class="num buy">${buy}</td>
       <td class="num sell">${sell}</td>
       <td class="market">${item.market || ""}</td>
