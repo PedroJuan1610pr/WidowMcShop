@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Widow MC · Clanes</title>
+<link rel="icon" type="image/png" href="widow-logo.png">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+  :root{
+    --bg: #0c0a0a;
+    --bg-deep: #060505;
+    --panel: #150f0f;
+    --panel-2: #1c1414;
+    --line: #3a1414;
+    --line-bright: #6b1d1d;
+    --text: #e9dede;
+    --text-dim: #8a7575;
+    --accent: #c81e1e;
+    --accent-bright: #ff2e2e;
+    --accent-dim: #7a1414;
+    --gold: #d9b25c;
+    --teal: #c2484a;
+    --danger: #ff4747;
+    --good: #49d85a;
+    --radius: 2px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:
+        radial-gradient(ellipse 900px 500px at 15% -10%, rgba(200,30,30,0.10), transparent 60%),
+        radial-gradient(ellipse 700px 500px at 105% 10%, rgba(200,30,30,0.07), transparent 60%),
+        var(--bg-deep);
+
+    background-repeat: no-repeat;
+    background-size: 100% 100%, 100% 100%, auto;
+
+    color:var(--text);
+    font-family:'JetBrains Mono', ui-monospace, Consolas, monospace;
+    }
+  body::before{
+    content:"";
+    position:fixed;
+    top:-60px; left:-60px;
+    width:340px; height:340px;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><g fill="none" stroke="%23c81e1e" stroke-width="0.6" opacity="0.35"><circle cx="0" cy="0" r="40"/><circle cx="0" cy="0" r="80"/><circle cx="0" cy="0" r="120"/><circle cx="0" cy="0" r="160"/><line x1="0" y1="0" x2="200" y2="0"/><line x1="0" y1="0" x2="200" y2="60"/><line x1="0" y1="0" x2="200" y2="120"/><line x1="0" y1="0" x2="200" y2="200"/><line x1="0" y1="0" x2="140" y2="200"/><line x1="0" y1="0" x2="70" y2="200"/><line x1="0" y1="0" x2="0" y2="200"/></g></svg>');
+    background-repeat:no-repeat;
+    pointer-events:none;
+    z-index:0;
+    opacity:0.6;
+  }
+
+  header{
+    position:relative;
+    z-index:1;
+    padding:24px 28px 18px;
+    border-bottom:2px solid var(--line-bright);
+    display:flex;
+    align-items:center;
+    gap:16px;
+    flex-wrap:wrap;
+    background: linear-gradient(180deg, rgba(120,20,20,0.10), transparent);
+  }
+  header h1{
+    margin:0;
+    font-family:'Courier New', Courier, monospace;
+    font-weight:900;
+    font-size:21px;
+    letter-spacing:1.5px;
+    color:var(--accent-bright);
+    text-transform:uppercase;
+    text-shadow: 0 0 14px rgba(255,40,40,0.35);
+  }
+  header .sub{
+    color:var(--text-dim);
+    font-size:11.5px;
+    letter-spacing:0.5px;
+  }
+
+  .nav-links{
+    display:flex;
+    gap:8px;
+    margin-left:auto;
+  }
+  .nav-btn{
+    display:inline-block;
+    padding:8px 16px;
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    background:var(--panel-2);
+    color:var(--text-dim);
+    text-decoration:none;
+    font-family:inherit;
+    font-size:12.5px;
+    letter-spacing:0.5px;
+    text-transform:uppercase;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+  }
+  .nav-btn:hover{
+    background:var(--accent-dim);
+    color:#fff;
+    border-color:var(--accent);
+  }
+  .nav-btn.active{
+    background:var(--accent-dim);
+    color:#fff;
+    border-color:var(--accent);
+    box-shadow: 0 0 8px rgba(255,40,40,0.25);
+  }
+
+  .content{
+    position:relative;
+    z-index:1;
+    padding:22px 28px 60px;
+    max-width:1100px;
+    margin:0 auto;
+  }
+
+  .toolbar{
+    display:flex;
+    gap:12px;
+    align-items:center;
+    flex-wrap:wrap;
+    margin-bottom:16px;
+  }
+  .toolbar input[type="text"]{
+    background:var(--panel-2);
+    border:1px solid var(--line);
+    color:var(--text);
+    padding:8px 10px;
+    border-radius:var(--radius);
+    font-family:inherit;
+    font-size:13px;
+    min-width:220px;
+  }
+  .toolbar input:focus{
+    outline:1px solid var(--accent);
+    outline-offset:0;
+  }
+
+  .status{
+    font-size:11.5px;
+    color:var(--text-dim);
+    margin-bottom:14px;
+  }
+  .status.err{ color: var(--danger); }
+  .status.ok{ color: var(--accent); }
+
+  table{
+    width:100%;
+    border-collapse:collapse;
+    background:var(--panel);
+    border:1px solid var(--line);
+  }
+  thead th{
+    text-align:left;
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:1px;
+    color:var(--text-dim);
+    padding:10px 12px;
+    border-bottom:2px solid var(--line);
+    background:var(--bg);
+    position:sticky;
+    top:0;
+  }
+  thead th.num{ text-align:right; }
+  tbody td{
+    padding:9px 12px;
+    border-bottom:1px solid var(--line);
+    white-space:nowrap;
+  }
+  tbody tr{ cursor:pointer; transition: background 0.1s; }
+  tbody tr:hover{ background:var(--panel-2); }
+  tbody tr:last-child td{ border-bottom:none; }
+
+  td.num{ text-align:right; font-variant-numeric: tabular-nums; }
+  td.rank{ color:var(--text-dim); width:36px; }
+  td.points{ color:var(--gold); font-weight:700; }
+  td.kills{ color:var(--good); }
+  td.deaths{ color:var(--danger); }
+  td.online{ color:var(--accent-bright); }
+  .clan-name{ color:var(--text); font-weight:700; }
+  .clan-tag{ color:var(--text-dim); font-size:11.5px; margin-left:6px; }
+
+  tr.rank-1{
+    background: linear-gradient(90deg, rgba(255,190,60,0.14), transparent 70%);
+    border-left: 3px solid #ffc93c;
+  }
+  tr.rank-1 .clan-name{ color:#ffd75e; text-shadow:0 0 8px rgba(255,201,60,0.35); }
+  tr.rank-1 td.points{ color:#ffd75e; text-shadow:0 0 8px rgba(255,201,60,0.4); }
+  tr.rank-1:hover{ background: linear-gradient(90deg, rgba(255,190,60,0.22), transparent 70%); }
+
+  tr.rank-2{
+    background: linear-gradient(90deg, rgba(200,205,215,0.12), transparent 70%);
+    border-left: 3px solid #cfd5dd;
+  }
+  tr.rank-2 .clan-name{ color:#dfe3e8; }
+  tr.rank-2 td.points{ color:#dfe3e8; }
+  tr.rank-2:hover{ background: linear-gradient(90deg, rgba(200,205,215,0.2), transparent 70%); }
+
+  tr.rank-3{
+    background: linear-gradient(90deg, rgba(205,127,66,0.14), transparent 70%);
+    border-left: 3px solid #cd7f42;
+  }
+  tr.rank-3 .clan-name{ color:#e0975c; }
+  tr.rank-3 td.points{ color:#e0975c; }
+  tr.rank-3:hover{ background: linear-gradient(90deg, rgba(205,127,66,0.22), transparent 70%); }
+
+  td.rank{ font-size:15px; text-align:center; }
+
+  .empty{
+    color:var(--text-dim);
+    padding:40px;
+    text-align:center;
+    border:1px solid var(--line);
+    background:var(--panel);
+  }
+
+  /* Modal */
+  .overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(4,2,2,0.72);
+    backdrop-filter: blur(2px);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:50;
+    padding:20px;
+  }
+  .overlay.open{ display:flex; }
+
+  .modal{
+    background:var(--panel);
+    border:1px solid var(--line-bright);
+    box-shadow: 0 0 40px rgba(200,30,30,0.25);
+    width:100%;
+    max-width:460px;
+    max-height:85vh;
+    overflow:auto;
+    position:relative;
+  }
+  .modal-head{
+    padding:18px 22px;
+    border-bottom:2px solid var(--line);
+    background: linear-gradient(180deg, rgba(120,20,20,0.15), transparent);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+  }
+  .modal-head h2{
+    margin:0;
+    font-family:'Courier New', Courier, monospace;
+    font-weight:900;
+    font-size:18px;
+    letter-spacing:1px;
+    color:var(--accent-bright);
+    text-transform:uppercase;
+  }
+  .modal-close{
+    background:var(--panel-2);
+    border:1px solid var(--line);
+    color:var(--text-dim);
+    width:28px; height:28px;
+    border-radius:var(--radius);
+    cursor:pointer;
+    font-size:14px;
+    line-height:1;
+    flex-shrink:0;
+  }
+  .modal-close:hover{ background:var(--accent-dim); color:#fff; border-color:var(--accent); }
+
+  .modal-body{ padding:18px 22px; }
+
+  .stat-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px 16px;
+    margin-bottom:18px;
+  }
+  .stat{
+    background:var(--panel-2);
+    border:1px solid var(--line);
+    padding:9px 12px;
+    border-radius:var(--radius);
+  }
+  .stat .lbl{
+    font-size:10px;
+    text-transform:uppercase;
+    letter-spacing:0.8px;
+    color:var(--text-dim);
+    display:block;
+    margin-bottom:3px;
+  }
+  .stat .val{ font-size:15px; font-weight:700; }
+  .stat.wide{ grid-column: 1 / -1; }
+
+  .val.points{ color:var(--gold); }
+  .val.kills{ color:var(--good); }
+  .val.deaths{ color:var(--danger); }
+  .val.online{ color:var(--accent-bright); }
+  .val.leader{ font-size:11px; color:var(--text-dim); word-break:break-all; font-weight:400; }
+
+  .section-title{
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:1px;
+    color:var(--text-dim);
+    margin:0 0 8px;
+    border-bottom:1px solid var(--line);
+    padding-bottom:6px;
+  }
+  .players{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+  }
+  .player-chip{
+    background:var(--panel-2);
+    border:1px solid var(--line);
+    color:var(--text);
+    padding:5px 10px;
+    border-radius:var(--radius);
+    font-size:12.5px;
+    font-family: 'JetBrains Mono', ui-monospace, Consolas, monospace;
+    cursor:pointer;
+    transition:.15s;
+    }
+    
+  .player-chip.leader-chip{
+    border-color:var(--accent);
+    color:var(--accent-bright);
+  }
+
+  ::-webkit-scrollbar{ width:10px; height:10px; }
+  ::-webkit-scrollbar-track{ background:var(--bg); }
+  ::-webkit-scrollbar-thumb{ background:var(--line); border-radius:5px; }
+
+  .player-chip{
+    background:var(--panel-2);
+    border:1px solid var(--line);
+    color:var(--text);
+    padding:5px 10px;
+    border-radius:var(--radius);
+    font-size:12.5px;
+    cursor:pointer;
+    transition:.15s;
+    }
+
+    .player-chip:hover{
+    background:var(--accent-dim);
+    border-color:var(--accent);
+    }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Widow MC · Clanes</h1>
+  <span class="sub" id="apiNote">api.widowmc.net/api/v1/clans</span>
+
+  <nav class="nav-links">
+    <a href="index.html" class="nav-btn">Shop</a>
+    <a href="clanes.html" class="nav-btn active">Clanes</a>
+  </nav>
+</header>
+
+<div class="content">
+
+  <div class="toolbar">
+    <input
+        type="text"
+        id="buscarClan"
+        placeholder="Buscar clan..."
+    >
+
+    <input
+        type="text"
+        id="buscarJugador"
+        placeholder="Buscar jugador..."
+    >
+    </div>
+
+  <div class="status" id="status">Cargando datos...</div>
+
+  <table id="resultTable">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Clan</th>
+        <th class="num">Puntos</th>
+        <th class="num">Miembros</th>
+        <th class="num">Online</th>
+        <th class="num">Kills</th>
+        <th class="num">K/D</th>
+        <th class="num">Deaths</th>
+      </tr>
+    </thead>
+    <tbody id="tbody"></tbody>
+  </table>
+  <div class="empty" id="emptyMsg" style="display:none;">Sin resultados para estos filtros.</div>
+
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <div class="modal-head">
+      <h2 id="modalTitle">Clan</h2>
+      <button class="modal-close" id="modalClose">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<script>
+const API_URL = "https://api.widowmc.net/api/v1/clans";
+
+let clansRaw = [];
+let clanActual = null;
+let viendoJugador = false;
+
+const el = id => document.getElementById(id);
+const statusEl = el("status");
+const tbody = el("tbody");
+const emptyMsg = el("emptyMsg");
+const table = el("resultTable");
+const overlay = el("overlay");
+const modalTitle = el("modalTitle");
+const modalBody = el("modalBody");
+
+function setStatus(msg, cls){
+  statusEl.textContent = msg;
+  statusEl.className = "status" + (cls ? " " + cls : "");
+}
+
+// Colores oficiales de los códigos § de Minecraft
+const MC_COLORS = {
+  "0": "#000000", "1": "#0000AA", "2": "#00AA00", "3": "#00AAAA",
+  "4": "#AA0000", "5": "#AA00AA", "6": "#FFAA00", "7": "#AAAAAA",
+  "8": "#555555", "9": "#5555FF", "a": "#55FF55", "b": "#55FFFF",
+  "c": "#FF5555", "d": "#FF55FF", "e": "#FFFF55", "f": "#FFFFFF"
+};
+
+function escapeHtml(str){
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
+// Convierte un string con códigos § (color/formato de Minecraft) a HTML
+function mcToHtml(str){
+  if(!str) return "";
+
+  const partes = str.split("§");
+  let html = "";
+  let estilo = { color: null, bold: false, italic: false, underline: false, strike: false };
+
+  // el primer trozo (antes del primer §) no tiene código
+  const primero = partes.shift();
+  if(primero) html += `<span>${escapeHtml(primero)}</span>`;
+
+  partes.forEach(trozo => {
+    const codigo = trozo.charAt(0).toLowerCase();
+    const texto = trozo.slice(1);
+
+    if(codigo === "r"){
+      estilo = { color: null, bold: false, italic: false, underline: false, strike: false };
+    }else if(codigo === "l"){
+      estilo.bold = true;
+    }else if(codigo === "o"){
+      estilo.italic = true;
+    }else if(codigo === "n"){
+      estilo.underline = true;
+    }else if(codigo === "m"){
+      estilo.strike = true;
+    }else if(codigo === "k"){
+      // obfuscado: no lo simulamos, se ignora
+    }else if(MC_COLORS[codigo]){
+      estilo = { color: MC_COLORS[codigo], bold: false, italic: false, underline: false, strike: false };
+    }
+
+    if(!texto) return;
+
+    const css = [];
+    if(estilo.color) css.push(`color:${estilo.color}`);
+    if(estilo.bold) css.push("font-weight:700");
+    if(estilo.italic) css.push("font-style:italic");
+    const decos = [];
+    if(estilo.underline) decos.push("underline");
+    if(estilo.strike) decos.push("line-through");
+    if(decos.length) css.push(`text-decoration:${decos.join(" ")}`);
+
+    html += `<span style="${css.join(";")}">${escapeHtml(texto)}</span>`;
+  });
+
+  return html;
+}
+
+function deduplicarClanes(clans){
+  const porNombre = new Map();
+
+  clans.forEach(clan => {
+    const clave = (clan.name || "").trim().toLowerCase();
+    const existente = porNombre.get(clave);
+
+    // Si ya existe un clan con ese nombre, nos quedamos con el de más puntos
+    // (si empatan, con el que tenga más miembros)
+    if(!existente){
+      porNombre.set(clave, clan);
+    }else{
+      const mejorPuntos = clan.points > existente.points;
+      const empatePuntos = clan.points === existente.points;
+      const mejorMiembros = clan.members > existente.members;
+      if(mejorPuntos || (empatePuntos && mejorMiembros)){
+        porNombre.set(clave, clan);
+      }
+    }
+  });
+
+  return [...porNombre.values()];
+}
+
+async function cargarDatos(){
+  setStatus("Cargando datos de la API...");
+  try{
+    const res = await fetch(API_URL, { cache: "no-store" });
+    if(!res.ok) throw new Error("HTTP " + res.status);
+    const data = await res.json();
+    const brutos = data.clans || [];
+    const dedupeados = deduplicarClanes(brutos);
+    clansRaw = dedupeados.slice().sort((a, b) => b.points - a.points);
+
+    setStatus(`${clansRaw.length} clanes cargados correctamente.`, "ok");
+    aplicarFiltros();
+  }catch(e){
+    setStatus(
+      "No se pudo conectar a la API. Si el problema persiste puede deberse a CORS " +
+      "(el navegador bloquea peticiones a otro dominio) — revisa la consola. Detalle: " + e.message,
+      "err"
+    );
+  }
+}
+
+function aplicarFiltros(){
+  if(!clansRaw.length) return;
+
+    const buscarClan = el("buscarClan").value.trim().toLowerCase();
+    const buscarJugador = el("buscarJugador").value.trim().toLowerCase();
+
+  let filtrados = clansRaw.filter(clan => {
+
+    const coincideClan =
+        !buscarClan ||
+        clan.name.toLowerCase().includes(buscarClan) ||
+        (clan.tag || "").replace(/§./g, "").toLowerCase().includes(buscarClan);
+
+    const coincideJugador =
+        !buscarJugador ||
+        (clan.players || []).some(p =>
+        p.toLowerCase().includes(buscarJugador)
+        );
+
+    return coincideClan && coincideJugador;
+    });
+
+  renderTabla(filtrados);
+}
+
+function renderTabla(clans){
+    
+  if(!clans.length){
+    table.style.display = "none";
+    emptyMsg.style.display = "block";
+    return;
+  }
+  table.style.display = "table";
+  emptyMsg.style.display = "none";
+
+  tbody.innerHTML = clans.map((clan, i) => {
+    const kd = clan.deaths === 0
+    ? clan.kills
+    : clan.kills / clan.deaths;
+    const rank = clansRaw.indexOf(clan) + 1;
+    const tag = clan.tag ? `<span class="clan-tag">[${mcToHtml(clan.tag)}]</span>` : "";
+    const rankClass = rank <= 3 ? ` rank-${rank}` : "";
+    const medalla = rank === 1 ? "🥇" : rank === 2 ? "🥈" : rank === 3 ? "🥉" : rank;
+    return `<tr class="${rankClass.trim()}" data-name="${encodeURIComponent(clan.name)}">
+      <td class="num rank">${medalla}</td>
+      <td class="clan-name">${clan.name}${tag}</td>
+      <td class="num points">${clan.points}</td>
+      <td class="num">${clan.members}</td>
+        <td class="num ${clan.online === 0 ? 'online' : ''}">
+            ${clan.online}
+        </td>
+        <td class="num">
+        ${clan.kills}
+        </td>
+        <td class="num ${
+        kd > 1 ? 'kills' :
+        kd < 1 && kd > 0 ? 'deaths' : ''
+        }">
+        ${kd.toFixed(2)}
+        </td>
+      <td class="num deaths">${clan.deaths}</td>
+    </tr>`;
+  }).join("");
+
+  tbody.querySelectorAll("tr").forEach(tr => {
+    tr.addEventListener("click", () => {
+      const name = decodeURIComponent(tr.dataset.name);
+      const clan = clansRaw.find(c => c.name === name);
+      if(clan) abrirModal(clan);
+    });
+  });
+}
+
+function abrirModal(clan){
+    clanActual = clan;
+    viendoJugador = false;
+  const tagHtml = clan.tag ? ` <span class="clan-tag">[${mcToHtml(clan.tag)}]</span>` : "";
+  modalTitle.innerHTML = `${escapeHtml(clan.name)}${tagHtml}`;
+
+  const players = (clan.players || []).map(p => {
+    return `
+        <button
+        class="player-chip"
+        onclick="abrirJugador('${p}')">
+        ${p}
+        </button>
+    `;
+    }).join("");
+
+  modalBody.innerHTML = `
+    <div class="stat-grid">
+      <div class="stat">
+        <span class="lbl">Puntos</span>
+        <span class="val points">${clan.points}</span>
+      </div>
+      <div class="stat">
+        <span class="lbl">Miembros</span>
+        <span class="val">${clan.members}</span>
+      </div>
+      <div class="stat">
+        <span class="lbl">Online</span>
+        <span class="val online">${clan.online}</span>
+      </div>
+      <div class="stat">
+        <span class="lbl">K / D</span>
+        <span class="val"><span class="kills">${clan.kills}</span> / <span class="deaths">${clan.deaths}</span></span>
+      </div>
+      <div class="stat wide">
+        <span class="lbl">Leader (UUID)</span>
+        <span class="val leader">${clan.leader}</span>
+      </div>
+    </div>
+
+    <p class="section-title">Jugadores (${(clan.players || []).length})</p>
+    <div class="players">${players || '<span class="clan-tag">Sin jugadores listados</span>'}</div>
+  `;
+
+  overlay.classList.add("open");
+}
+
+async function abrirJugador(nombre){
+    viendoJugador = true;
+  try{
+    const res = await fetch(
+      `https://api.widowmc.net/api/v1/players/${encodeURIComponent(nombre)}`,
+      { cache: "no-store" }
+    );
+
+    if(!res.ok) throw new Error("Jugador no encontrado");
+
+    const jugador = await res.json();
+    const s = jugador.stats;
+
+    modalTitle.textContent = jugador.name;
+
+    modalBody.innerHTML = `
+      <div class="stat-grid">
+
+        <div class="stat">
+          <span class="lbl">UUID</span>
+          <span class="val" style="font-size:11px">${jugador.uuid}</span>
+        </div>
+
+        <div class="stat">
+          <span class="lbl">Estado</span>
+          <span class="val ${jugador.online ? 'online' : ''}">
+            ${jugador.online ? 'Online' : 'Offline'}
+          </span>
+        </div>
+
+        <div class="stat">
+          <span class="lbl">Kills</span>
+          <span class="val kills">${s.kills}</span>
+        </div>
+
+        <div class="stat">
+          <span class="lbl">Deaths</span>
+          <span class="val deaths">${s.deaths}</span>
+        </div>
+
+        <div class="stat">
+          <span class="lbl">KDR</span>
+          <span class="val">${s.kdr}</span>
+        </div>
+
+        <div class="stat">
+          <span class="lbl">Killstreak</span>
+          <span class="val">${s.killstreak}</span>
+        </div>
+
+        <div class="stat">
+          <span class="lbl">Máx. Killstreak</span>
+          <span class="val">${s.highest_killstreak}</span>
+        </div>
+
+        <div class="stat">
+          <span class="lbl">Balance</span>
+          <span class="val">${s.balance.toFixed(2)}</span>
+        </div>
+
+        <div class="stat">
+          <span class="lbl">Gemas</span>
+          <span class="val">${s.gems}</span>
+        </div>
+
+        <div class="stat">
+          <span class="lbl">Monedas</span>
+          <span class="val">${s.coins}</span>
+        </div>
+
+        <div class="stat">
+          <span class="lbl">Diamantes</span>
+          <span class="val">${s.diamonds}</span>
+        </div>
+
+        <div class="stat">
+          <span class="lbl">Clan</span>
+          <span class="val">${s.clan || "Ninguno"}</span>
+        </div>
+
+      </div>
+    `;
+
+    overlay.classList.add("open");
+
+  }catch(err){
+    alert("No se pudo cargar el jugador.");
+    console.error(err);
+  }
+}
+
+function cerrarModal(){
+
+  // Si estamos viendo un jugador, volver al clan
+  if(viendoJugador && clanActual){
+    abrirModal(clanActual);
+    return;
+  }
+
+  // Si estamos viendo el clan, cerrar normalmente
+  overlay.classList.remove("open");
+}
+
+el("modalClose").addEventListener("click", cerrarModal);
+overlay.addEventListener("click", (e) => {
+  if(e.target === overlay) cerrarModal();
+});
+document.addEventListener("keydown", (e) => {
+  if(e.key === "Escape") cerrarModal();
+});
+
+el("buscarClan").addEventListener("input", aplicarFiltros);
+el("buscarJugador").addEventListener("input", aplicarFiltros);
+
+cargarDatos();
+</script>
+</body>
+</html>
