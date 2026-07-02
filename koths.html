@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-DTQNHDL9P4"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-DTQNHDL9P4');
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Widow MC · Koths</title>
+<link rel="icon" type="image/png" href="img/logo.png">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+  :root{
+    --bg: #0c0a0a;
+    --bg-deep: #060505;
+    --panel: #150f0f;
+    --panel-2: #1c1414;
+    --line: #3a1414;
+    --line-bright: #6b1d1d;
+    --text: #e9dede;
+    --text-dim: #8a7575;
+    --accent: #c81e1e;       /* rojo viuda negra */
+    --accent-bright: #ff2e2e;
+    --accent-dim: #7a1414;
+    --gold: #d9b25c;
+    --teal: #c2484a;
+    --danger: #ff4747;
+    --ok: #49d85a;
+    --radius: 2px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(ellipse 900px 500px at 15% -10%, rgba(200,30,30,0.10), transparent 60%),
+      radial-gradient(ellipse 700px 500px at 105% 10%, rgba(200,30,30,0.07), transparent 60%),
+      var(--bg-deep);
+    color:var(--text);
+    font-family: 'JetBrains Mono', ui-monospace, Consolas, monospace;
+    font-size:14px;
+    position:relative;
+  }
+
+  /* tela de araña sutil de fondo, fija en la esquina superior */
+  body::before{
+    content:"";
+    position:fixed;
+    top:-60px; left:-60px;
+    width:340px; height:340px;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><g fill="none" stroke="%23c81e1e" stroke-width="0.6" opacity="0.35"><circle cx="0" cy="0" r="40"/><circle cx="0" cy="0" r="80"/><circle cx="0" cy="0" r="120"/><circle cx="0" cy="0" r="160"/><line x1="0" y1="0" x2="200" y2="0"/><line x1="0" y1="0" x2="200" y2="60"/><line x1="0" y1="0" x2="200" y2="120"/><line x1="0" y1="0" x2="200" y2="200"/><line x1="0" y1="0" x2="140" y2="200"/><line x1="0" y1="0" x2="70" y2="200"/><line x1="0" y1="0" x2="0" y2="200"/></g></svg>');
+    background-repeat:no-repeat;
+    pointer-events:none;
+    z-index:0;
+    opacity:0.6;
+  }
+
+  header{
+    position:relative;
+    z-index:1;
+    padding:24px 28px 18px;
+    border-bottom:2px solid var(--line-bright);
+    display:flex;
+    align-items:center;
+    gap:16px;
+    flex-wrap:wrap;
+    background: linear-gradient(180deg, rgba(120,20,20,0.10), transparent);
+  }
+  header h1{
+    margin:0;
+    font-family:'Courier New', Courier, monospace;
+    font-weight:900;
+    font-size:21px;
+    letter-spacing:1.5px;
+    color:var(--accent-bright);
+    text-transform:uppercase;
+    text-shadow: 0 0 14px rgba(255,40,40,0.35);
+  }
+  header .sub{
+    color:var(--text-dim);
+    font-size:11.5px;
+    letter-spacing:0.5px;
+  }
+
+  .nav-links{
+    display:flex;
+    gap:8px;
+    margin-left:auto;
+  }
+  .nav-btn{
+    display:inline-block;
+    padding:8px 16px;
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    background:var(--panel-2);
+    color:var(--text-dim);
+    text-decoration:none;
+    font-family:inherit;
+    font-size:12.5px;
+    letter-spacing:0.5px;
+    text-transform:uppercase;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+  }
+  .nav-btn:hover{
+    background:var(--accent-dim);
+    color:#fff;
+    border-color:var(--accent);
+  }
+  .nav-btn.active{
+    background:var(--accent-dim);
+    color:#fff;
+    border-color:var(--accent);
+    box-shadow: 0 0 8px rgba(255,40,40,0.25);
+  }
+
+  .layout{
+    display:grid;
+    grid-template-columns: 280px 1fr;
+    min-height: calc(100vh - 70px);
+  }
+  @media (max-width: 800px){
+    .layout{ grid-template-columns: 1fr; }
+  }
+
+  .controls{
+    background:var(--panel);
+    border-right:2px solid var(--line);
+    padding:18px;
+    display:flex;
+    flex-direction:column;
+    gap:18px;
+  }
+  .group{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+  }
+  .group label.title{
+    color:var(--text-dim);
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:1px;
+    margin-bottom:2px;
+  }
+  .seg{
+    display:flex;
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    overflow:hidden;
+  }
+  .seg button{
+    flex:1;
+    background:var(--panel-2);
+    color:var(--text-dim);
+    border:none;
+    padding:8px 6px;
+    cursor:pointer;
+    font-family:inherit;
+    font-size:12px;
+  }
+  .seg button.active{
+    background:var(--accent-dim);
+    color:#fff;
+  }
+  .seg button:not(:last-child){ border-right:1px solid var(--line); }
+
+  input[type="text"], select{
+    background:var(--panel-2);
+    border:1px solid var(--line);
+    color:var(--text);
+    padding:7px 8px;
+    border-radius:var(--radius);
+    font-family:inherit;
+    font-size:13px;
+    width:100%;
+  }
+  input:focus, select:focus{
+    outline:1px solid var(--accent);
+    outline-offset:0;
+  }
+
+  .checkrow{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    color:var(--text-dim);
+    font-size:13px;
+  }
+  .checkrow input{ accent-color: var(--accent); }
+
+  button.primary{
+    background:var(--accent-dim);
+    color:#fff;
+    border:1px solid var(--accent);
+    padding:9px;
+    border-radius:var(--radius);
+    cursor:pointer;
+    font-family:inherit;
+    font-size:13px;
+    letter-spacing:0.5px;
+  }
+  button.primary:hover{ background:var(--accent); }
+
+  .status{
+    margin-top:auto;
+    font-size:11px;
+    color:var(--text-dim);
+    border-top:1px solid var(--line);
+    padding-top:10px;
+  }
+  .status.err{ color: var(--danger); }
+  .status.ok{ color: var(--accent); }
+
+  .content{
+    padding:18px 22px;
+    overflow:auto;
+  }
+
+  /* --- banner "próximo koth" --- */
+  .next-banner{
+    position:relative;
+    border:1px solid var(--line-bright);
+    background: linear-gradient(135deg, rgba(200,30,30,0.12), var(--panel));
+    border-radius:var(--radius);
+    padding:16px 20px;
+    margin-bottom:22px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+    flex-wrap:wrap;
+    overflow:hidden;
+  }
+  .next-banner::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background: repeating-linear-gradient(90deg, rgba(255,40,40,0.04) 0 2px, transparent 2px 8px);
+    pointer-events:none;
+  }
+  .next-label{
+    font-size:10.5px;
+    text-transform:uppercase;
+    letter-spacing:1.5px;
+    color:var(--text-dim);
+    margin-bottom:4px;
+  }
+  .next-name{
+    font-family:'Courier New', Courier, monospace;
+    font-weight:900;
+    font-size:20px;
+    color:var(--accent-bright);
+    text-transform:uppercase;
+    text-shadow: 0 0 10px rgba(255,40,40,0.35);
+  }
+  .next-meta{
+    color:var(--text-dim);
+    font-size:12px;
+    margin-top:4px;
+  }
+  .next-countdown{
+    font-size:30px;
+    font-weight:700;
+    color:var(--gold);
+    font-variant-numeric: tabular-nums;
+    letter-spacing:1px;
+    text-shadow: 0 0 12px rgba(217,178,92,0.3);
+  }
+  .next-countdown small{
+    display:block;
+    text-align:right;
+    font-size:10px;
+    color:var(--text-dim);
+    font-weight:400;
+    letter-spacing:1px;
+    text-transform:uppercase;
+  }
+
+  /* --- grid de koths --- */
+  .grid{
+    display:grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap:16px;
+  }
+
+  .koth-card{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:16px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    position:relative;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .koth-card.active{
+    border-color:var(--accent);
+    box-shadow: 0 0 18px rgba(255,40,40,0.18), inset 0 0 30px rgba(200,30,30,0.06);
+  }
+  .koth-card.active::before{
+    content:"";
+    position:absolute;
+    top:10px; right:10px;
+    width:8px; height:8px;
+    border-radius:50%;
+    background:var(--accent-bright);
+    box-shadow: 0 0 8px 2px rgba(255,40,40,0.7);
+    animation: pulse 1.4s infinite ease-in-out;
+  }
+  @keyframes pulse{
+    0%,100%{ opacity:1; transform:scale(1); }
+    50%{ opacity:0.4; transform:scale(0.7); }
+  }
+
+  .koth-top{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    gap:8px;
+  }
+  .koth-name{
+    font-family:'Courier New', Courier, monospace;
+    font-weight:900;
+    font-size:16px;
+    letter-spacing:0.5px;
+    text-transform:uppercase;
+    color:var(--text);
+  }
+  .koth-card.active .koth-name{ color:var(--accent-bright); }
+
+  .badge{
+    font-size:10px;
+    text-transform:uppercase;
+    letter-spacing:0.8px;
+    padding:3px 7px;
+    border-radius:var(--radius);
+    border:1px solid var(--line);
+    color:var(--text-dim);
+    white-space:nowrap;
+  }
+  .badge.pot{ border-color:#7a1414; color:var(--teal); }
+  .badge.crystal{ border-color:#4a6b7a; color:#7ec7d9; }
+
+  .koth-status{
+    font-size:12.5px;
+    color:var(--text-dim);
+  }
+  .koth-status.is-active{ color:var(--accent-bright); font-weight:700; }
+  .koth-status .capper{ color:var(--gold); }
+
+  .koth-timer{
+    font-size:26px;
+    font-weight:700;
+    font-variant-numeric: tabular-nums;
+    color:var(--text);
+    letter-spacing:1px;
+  }
+  .koth-card.active .koth-timer{ color:var(--accent-bright); }
+
+  .progress-track{
+    height:5px;
+    border-radius:3px;
+    background:var(--panel-2);
+    border:1px solid var(--line);
+    overflow:hidden;
+  }
+  .progress-fill{
+    height:100%;
+    background: var(--accent-dim);
+    transition: width 0.5s linear;
+  }
+  .koth-card.active .progress-fill{ background: var(--accent); }
+
+  .koth-meta{
+    display:flex;
+    justify-content:space-between;
+    font-size:11.5px;
+    color:var(--text-dim);
+    border-top:1px solid var(--line);
+    padding-top:8px;
+  }
+  .koth-meta .coords{ font-variant-numeric: tabular-nums; }
+
+  .empty{
+    color:var(--text-dim);
+    padding:40px;
+    text-align:center;
+  }
+
+  ::-webkit-scrollbar{ width:10px; height:10px; }
+  ::-webkit-scrollbar-track{ background:var(--bg); }
+  ::-webkit-scrollbar-thumb{ background:var(--line); border-radius:5px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Widow MC · Koths</h1>
+  <span class="sub" id="apiNote">api.widowmc.net/api/v1/koth</span>
+
+  <nav class="nav-links">
+    <a href="index.html" class="nav-btn">Shop</a>
+    <a href="clanes.html" class="nav-btn">Clanes</a>
+    <a href="koths.html" class="nav-btn active">Koths</a>
+  </nav>
+</header>
+
+<div class="layout">
+
+  <aside class="controls">
+
+    <div class="group">
+      <label class="title">Tipo de combate</label>
+      <div class="seg" id="tipoSeg">
+        <button data-val="todos" class="active">Todos</button>
+        <button data-val="pot">Pot</button>
+        <button data-val="crystal">Crystal</button>
+      </div>
+    </div>
+
+    <div class="group">
+      <label class="title">Orden</label>
+      <div class="seg" id="ordenSeg">
+        <button data-val="proximo" class="active">Más próximo</button>
+        <button data-val="nombre">Nombre</button>
+      </div>
+    </div>
+
+    <div class="group">
+      <label class="title">Buscar koth</label>
+      <input type="text" id="buscar" placeholder="ej. cueva, castillo...">
+    </div>
+
+    <div class="group">
+      <div class="checkrow">
+        <input type="checkbox" id="soloActivos">
+        <label for="soloActivos">Solo activos ahora</label>
+      </div>
+    </div>
+
+    <button class="primary" id="refreshBtn">↻ Refrescar datos</button>
+
+    <div class="status" id="status">Cargando datos...</div>
+  </aside>
+
+  <main class="content">
+
+    <div class="next-banner" id="nextBanner" style="display:none;">
+      <div>
+        <div class="next-label">Próximo koth</div>
+        <div class="next-name" id="nextName">—</div>
+        <div class="next-meta" id="nextMeta"></div>
+      </div>
+      <div class="next-countdown">
+        <span id="nextCountdown">--:--</span>
+        <small>tiempo restante</small>
+      </div>
+    </div>
+
+    <div class="grid" id="grid"></div>
+    <div class="empty" id="emptyMsg" style="display:none;">Sin koths para estos filtros.</div>
+  </main>
+
+</div>
+
+<script>
+const API_URL = "https://api.widowmc.net/api/v1/koth";
+const REFRESH_MS = 15000; // re-sincroniza con la API cada 15s
+
+let kothsRaw = [];
+let nextRaw = null;
+let fetchedAt = 0;   // Date.now() en el momento del fetch (referencia local)
+let tipoFiltro = "todos";
+let orden = "proximo";
+let tickHandle = null;
+let refreshHandle = null;
+
+const el = id => document.getElementById(id);
+const statusEl = el("status");
+const grid = el("grid");
+const emptyMsg = el("emptyMsg");
+const nextBanner = el("nextBanner");
+
+function setStatus(msg, cls){
+  statusEl.textContent = msg;
+  statusEl.className = "status" + (cls ? " " + cls : "");
+}
+
+function fmtTime(totalSeconds){
+  totalSeconds = Math.max(0, Math.round(totalSeconds));
+  const h = Math.floor(totalSeconds / 3600);
+  const m = Math.floor((totalSeconds % 3600) / 60);
+  const s = totalSeconds % 60;
+  const pad = n => String(n).padStart(2, "0");
+  return h > 0 ? `${pad(h)}:${pad(m)}:${pad(s)}` : `${pad(m)}:${pad(s)}`;
+}
+
+function combatLabel(t){
+  if(t === "pot") return "Pot";
+  if(t === "crystal") return "Crystal";
+  return t || "?";
+}
+
+async function cargarDatos(){
+  setStatus("Cargando datos de la API...");
+  try{
+    const res = await fetch(API_URL, { cache: "no-store" });
+    if(!res.ok) throw new Error("HTTP " + res.status);
+    const data = await res.json();
+
+    kothsRaw = data.koths || [];
+    nextRaw = data.next || null;
+    fetchedAt = Date.now();
+
+    setStatus(`${kothsRaw.length} koths cargados correctamente.`, "ok");
+    aplicarFiltros();
+    startTicking();
+  }catch(e){
+    setStatus(
+      "No se pudo conectar a la API. Si el problema persiste puede deberse a CORS " +
+      "(el navegador bloquea peticiones a otro dominio) — revisa la consola. Detalle: " + e.message,
+      "err"
+    );
+  }
+}
+
+function elapsedSinceFetch(){
+  return (Date.now() - fetchedAt) / 1000;
+}
+
+function liveRemaining(koth){
+  // Los koths inactivos aún no han empezado (started_at: 0): remaining_seconds
+  // es solo la duración que tendrán al abrir, no una cuenta atrás. Solo se
+  // descuenta tiempo en vivo mientras el koth está activo.
+  if(!koth.active) return koth.remaining_seconds;
+  return Math.max(0, koth.remaining_seconds - elapsedSinceFetch());
+}
+
+function liveNextIn(){
+  if(!nextRaw) return 0;
+  return Math.max(0, nextRaw.in_seconds - elapsedSinceFetch());
+}
+
+function aplicarFiltros(){
+  if(!kothsRaw.length){
+    grid.innerHTML = "";
+    emptyMsg.style.display = "block";
+    return;
+  }
+
+  const buscar = el("buscar").value.trim().toLowerCase();
+  const soloActivos = el("soloActivos").checked;
+
+  let filtrados = kothsRaw.filter(k => {
+    if(tipoFiltro !== "todos" && k.combat_type !== tipoFiltro) return false;
+    if(soloActivos && !k.active) return false;
+    if(buscar && !k.name.toLowerCase().includes(buscar)) return false;
+    return true;
+  });
+
+  filtrados.sort((a, b) => {
+    if(orden === "nombre") return a.name.localeCompare(b.name);
+    // "proximo": activos primero (por tiempo restante asc), luego el resto por remaining asc
+    if(a.active !== b.active) return a.active ? -1 : 1;
+    return a.remaining_seconds - b.remaining_seconds;
+  });
+
+  renderGrid(filtrados);
+  renderNextBanner();
+}
+
+function renderNextBanner(){
+  if(!nextRaw){
+    nextBanner.style.display = "none";
+    return;
+  }
+  nextBanner.style.display = "flex";
+  el("nextName").textContent = nextRaw.name;
+  const fecha = new Date(nextRaw.at).toLocaleString("es-ES", {
+    hour: "2-digit", minute: "2-digit", day: "2-digit", month: "2-digit"
+  });
+  el("nextMeta").textContent = `${combatLabel(nextRaw.combat_type)} · ${fecha}`;
+}
+
+function renderGrid(items){
+  if(!items.length){
+    grid.innerHTML = "";
+    emptyMsg.style.display = "block";
+    return;
+  }
+  emptyMsg.style.display = "none";
+
+  grid.innerHTML = items.map(k => {
+    const remaining = liveRemaining(k);
+    const total = k.total_seconds || 1;
+    const pct = k.active ? Math.max(0, Math.min(100, (remaining / total) * 100)) : 100;
+    const activeClass = k.active ? "active" : "";
+    let statusHtml;
+    if(k.active){
+      statusHtml = k.capturing
+        ? `<span class="is-active">● Capturando</span> — <span class="capper">${k.capturing}</span>`
+        : `<span class="is-active">● Activo</span>`;
+    } else {
+      statusHtml = "Esperando apertura";
+    }
+    return `<div class="koth-card ${activeClass}" data-name="${k.name}">
+      <div class="koth-top">
+        <div class="koth-name">${k.name}</div>
+        <div class="badge ${k.combat_type}">${combatLabel(k.combat_type)}</div>
+      </div>
+      <div class="koth-status">${statusHtml}</div>
+      <div class="koth-timer" data-remaining="${k.remaining_seconds}">${fmtTime(remaining)}</div>
+      <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+      <div class="koth-meta">
+        <span>${k.world || ""}</span>
+        <span class="coords">${k.x}, ${k.y}, ${k.z}</span>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+function startTicking(){
+  if(tickHandle) clearInterval(tickHandle);
+  if(refreshHandle) clearInterval(refreshHandle);
+
+  tickHandle = setInterval(() => {
+    // actualiza contadores en vivo sin re-renderizar toda la grid
+    document.querySelectorAll(".koth-card").forEach(card => {
+      const name = card.dataset.name;
+      const k = kothsRaw.find(x => x.name === name);
+      if(!k) return;
+      const remaining = liveRemaining(k);
+      const total = k.total_seconds || 1;
+      const pct = k.active ? Math.max(0, Math.min(100, (remaining / total) * 100)) : 100;
+      const timerEl = card.querySelector(".koth-timer");
+      const fillEl = card.querySelector(".progress-fill");
+      if(timerEl) timerEl.textContent = fmtTime(remaining);
+      if(fillEl) fillEl.style.width = pct + "%";
+    });
+
+    if(nextRaw){
+      el("nextCountdown").textContent = fmtTime(liveNextIn());
+    }
+  }, 1000);
+
+  refreshHandle = setInterval(cargarDatos, REFRESH_MS);
+}
+
+// --- listeners ---
+document.querySelectorAll("#tipoSeg button").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll("#tipoSeg button").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    tipoFiltro = btn.dataset.val;
+    aplicarFiltros();
+  });
+});
+
+document.querySelectorAll("#ordenSeg button").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll("#ordenSeg button").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    orden = btn.dataset.val;
+    aplicarFiltros();
+  });
+});
+
+el("buscar").addEventListener("input", aplicarFiltros);
+el("soloActivos").addEventListener("change", aplicarFiltros);
+el("refreshBtn").addEventListener("click", cargarDatos);
+
+cargarDatos();
+</script>
+</body>
+</html>
